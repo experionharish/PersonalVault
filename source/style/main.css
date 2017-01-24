@@ -1,0 +1,229 @@
+body {
+	background-color: #00598e;
+	font-family: sans-serif;
+	color: white;
+}
+
+
+h1 {
+	text-align: center; 
+	color: #71c6c1;
+}
+
+.vcenter {
+	 margin-top: 10%; 
+}
+
+.loginForm {
+	border-radius: 5px;
+	color: white;
+	padding: 30px 10% 50px 10%;
+	background: rgba(0,0,0,0.4);
+}
+
+.copyright {
+	text-align: center;
+	padding-top: 3px;
+}
+
+a {
+	cursor: pointer;
+}
+
+.glyphiconBg {
+	background-color: #00598e;
+	color: white;
+	border: none;
+}
+
+.input-group {
+	margin: 15px 0;
+	
+}
+
+.loginbtn {
+	margin-top: 25px;
+	height: 40px;
+	font-size:18px;
+	font-weight:bold;
+	letter-spacing:2px;
+}
+
+#loginMessage {
+	margin-top: 10px;
+	float: right;
+	
+}
+
+.header {
+  background: rgba(0,0,0,0.4);
+	
+}
+.userIcon {
+	padding-right:100px;
+}
+
+.affix {
+      top:1px;
+      width: 100%;
+  }
+
+.content {
+	background-color: #062f3c;
+	padding-bottom: 50px;
+	min-height:420px;
+}
+
+.navbar {
+	margin-bottom: 0;
+}
+
+.dataBox {
+	border: 1px solid white;
+	margin-top: 30px;
+	border-radius: 10px;
+}
+
+.boxHeader {
+	background-color: rgba(120,140,182, 0.4);
+	border-radius: 12px 12px 0 0;
+}
+
+.moreInfoFields {
+	border-top: 1px solid #a5acaf;
+}
+
+.moreInfoFields:nth-child(4n+1) {
+	background-color: rgba(165,172,175, 0.1)
+}
+
+.moreInfoFields:nth-child(4n+2) {
+	background-color: rgba(165,172,175, 0.1)
+}
+
+.moreInfoFields:nth-child(4n+3) {
+	background-color: rgba(165,172,175, 0.2)
+}
+
+.moreInfoFields:nth-child(4n) {
+	background-color: rgba(165,172,175, 0.2)
+}
+
+.passwordField {
+	background: none;
+	border: none;
+	width: 50%;
+}
+
+.cardField {
+	background: none;
+	border: none;
+	width: 120px;
+}
+
+.filterBar {
+	padding: 10px;
+	text-align: center;
+	background-color: rgba(0,0,0,.7);
+}
+
+#infoType {
+	color: black;
+	width: 60%;
+	
+}
+
+.infoForm {
+	padding: 30px
+}
+
+.input_status {
+	padding-top: 10px
+}
+
+.alert {
+	padding-top:5px;
+	padding-bottom:5px;
+}
+
+.fileLink {
+	color: orange;
+	
+}
+
+.fileLink:hover {
+	color: white;
+	text-decoration:none;
+}
+
+.editDelete {
+	padding-right: 5px;
+	color: #aaa;
+}
+
+.glyphicon-edit, .glyphicon-trash{
+	cursor: pointer;
+}
+
+.glyphicon-edit:hover {
+	color: white;
+}
+
+.glyphicon-trash:hover {
+	color: #B00E0E;
+}
+
+.jumbotron {
+	width: 80%;
+	margin: 50px auto;
+	background-color: #545454;
+	padding:20px;
+	text-align:center;
+}
+
+.footer {
+	padding: 10px;
+	text-align: center;
+	background-color: rgba(34,34,34,1);
+	color: #71c6c1;
+}
+
+
+
+
+/* Extra Small Devices, Phones */ 
+@media (min-width : 320px) {
+	.header h1 {
+		font-size:2.1em;
+		text-align: center;
+		margin: 0;
+	  padding:8% 5%;
+	}
+}
+
+/* Extra Small Devices, Phones */ 
+@media (min-width : 480px) {
+  .header h1 {
+		font-size:2.5em;
+		padding:4%;
+	}
+}
+
+/* Small Devices, Tablets */
+@media (min-width : 768px) {
+  .header h1 {
+		text-align: left;
+	}
+	
+}
+
+@media (min-width: 1000px) {
+  .container{
+    max-width: 75%;
+  }
+	.affix {
+      top:1px;
+      width: 75%;
+  }
+}
+

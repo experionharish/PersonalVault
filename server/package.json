@@ -1,0 +1,20 @@
+{
+  "name": "vault",
+  "version": "1.0.0",
+  "description": "Personal Vault Server",
+  "main": "vaultServer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Harish Jose",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cors": "^2.8.1",
+    "express": "^4.14.0",
+    "express-session": "^1.14.2",
+    "jsonwebtoken": "^7.2.1",
+    "multer": "^1.2.1",
+    "mysql": "^2.12.0"
+  }
+}

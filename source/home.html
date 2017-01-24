@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Home | Personal Vault</title>
+	<meta charset="utf-8">
+	 <!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	<!-- Axios for http requests -->
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+	<!-- Encryption library md5-->
+	<script src="script/2.5.3-crypto-md5.js"></script>
+	
+
+	<link rel="stylesheet" type="text/css" href="style/main.css">
+	
+	<script type="text/javascript" src="script/main.js"></script>
+	<script type="text/javascript">
+			authenticate();
+	</script>
+
+</head>
+<body onload="getData()" onunload="function reset(){}">
+<div class="container">
+	<div class="row">
+		<div class="col-sm-12 header">
+			<h1>PERSONAL VAULT</h1>
+		</div>
+	</div>
+	<div class="row">
+		<nav class="navbar navbar-inverse navbar-static-top" data-spy="affix" data-offset-top="100" >
+		  <div class="container-fluid">
+		    <div class="navbar-header">
+		      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>                        
+		      </button>
+		      <a class="navbar-brand userIcon" href="#">Hi <span id="name_of_user">user</span> <span class="glyphicon glyphicon-user"></span></a>
+		    </div>
+		    <div class="collapse navbar-collapse" id="myNavbar">
+		      <ul class="nav navbar-nav">
+		        <li class="active"><a href=""><span class="glyphicon glyphicon-briefcase"></span> MY VAULT</a></li>
+		        <li><a href="add.html"><span class="glyphicon glyphicon-plus-sign"></span> ADD</a></li>
+		      </ul>
+
+		      <ul class="nav navbar-nav navbar-right">
+		        <li><a onclick="logout()"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+		      </ul>
+		    </div>
+		  </div>
+		</nav>
+		
+	</div>
+	<div class="row content" id="informations">
+		
+		<!-- <!-- <!-- <!-- <div class="col-sm-10 col-sm-offset-1 dataBox" data-toggle="collapse" data-target=".moreInfo">
+			<div class="row boxHeader">
+				<div class="col-xs-6 col-md-8">
+					<h5>FEDERAL BANK</h5>
+				</div>
+				<div class="col-xs-6 col-md-4">
+					<h5><span class="glyphicon glyphicon-credit-card"></span> CREDIT CARD</h5>
+				</div>
+
+			</div>
+			<div class="row">
+				<div class="col-xs-5 col-sm-2">
+					<h5>Card No.</h5>
+				</div>
+				<div class="col-xs-7 col-sm-4">
+					<h5>: xxxx xxxx xxxx 8989</h5>
+				</div>
+				<div class="col-xs-5 col-sm-2">
+					<h5>Name on Card</h5>
+				</div>
+				<div class="col-xs-7 col-sm-4">
+					<h5>: Harish Jose</h5>
+				</div>
+			
+			</div>
+			<div class="row">
+				<div class="moreInfo collapse">
+					<div class="col-xs-5 col-sm-2 moreInfoFields">
+						<h5>Card Type</h5>
+					</div>
+					<div class="col-xs-7 col-sm-2 moreInfoFields">
+						<h5>: Visa</h5>
+					</div>
+					<div class="col-xs-5 col-sm-1 moreInfoFields">
+						<h5>CVV</h5>
+					</div>
+					<div class="col-xs-7 col-sm-1 moreInfoFields">
+						<h5>: 234</h5>
+					</div>
+					<div class="col-xs-5 col-sm-1 moreInfoFields">
+						<h5>PIN</h5>
+					</div>
+					<div class="col-xs-7 col-sm-2 moreInfoFields">
+						<h5>: 1234</h5>
+					</div>
+					<div class="col-xs-5 col-sm-1 moreInfoFields">
+						<h5>Exp</h5>
+					</div>
+					<div class="col-xs-7 col-sm-2 moreInfoFields">
+						<h5>: 02/21</h5>
+					</div>
+
+					<div class="col-xs-3 moreInfoFields">
+						<h5>Notes :</h5>
+					</div>
+					<div class="col-xs-9 moreInfoFields">
+						<h5>Lorem Ipsum lorem ipsum...</h5>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<!-- end of data box credit card --
+
+		<div class="col-sm-10 col-sm-offset-1 dataBox" data-toggle="collapse" data-target=".moreInfo">
+			<div class="row boxHeader">
+				<div class="col-xs-6 col-md-8">
+					<h5>INDIAN OVERSEAS BANK</h5>
+				</div>
+				<div class="col-xs-6 col-md-4">
+					<h5><span class="glyphicon glyphicon-piggy-bank"></span> BANK LOAN</h5>
+				</div>
+
+			</div>
+			<div class="row">
+				<div class="col-xs-5 col-sm-2">
+					<h5>Amount:</h5>
+				</div>
+				<div class="col-xs-7 col-sm-4">
+					<h5>: $1500</h5>
+				</div>
+				<div class="col-xs-5 col-sm-2">
+					<h5>Status</h5>
+				</div>
+				<div class="col-xs-7 col-sm-4">
+					<h5>: Active</h5>
+				</div>
+			
+			</div>
+			<div class="row">
+				<div class="moreInfo collapse">
+					<div class="col-xs-5 col-sm-2 moreInfoFields">
+						<h5>Start Date</h5>
+					</div>
+					<div class="col-xs-7 col-sm-2 moreInfoFields">
+						<h5>: 10-10-2016</h5>
+					</div>
+					<div class="col-xs-5 col-sm-2 moreInfoFields">
+						<h5>Period</h5>
+					</div>
+					<div class="col-xs-7 col-sm-2 moreInfoFields">
+						<h5>: 2 Year</h5>
+					</div>
+					<div class="col-xs-5 col-sm-2 moreInfoFields">
+						<h5>Interest Rate</h5>
+					</div>
+					<div class="col-xs-7 col-sm-2 moreInfoFields">
+						<h5>: 11%</h5>
+					</div>
+					
+
+					<div class="col-xs-2 moreInfoFields">
+						<h5>Notes : </h5>
+					</div>
+					<div class="col-xs-10 moreInfoFields">
+						<h5>Lorem Ipsum lorem ipsum...</h5>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<!-- end of data box  bank loan --
+
+		<div class="col-sm-10 col-sm-offset-1 dataBox" data-toggle="collapse" data-target=".moreInfo">
+			<div class="row boxHeader">
+				<div class="col-xs-6 col-md-8">
+					<h5>ABC INSURANCE Co.</h5>
+				</div>
+				<div class="col-xs-6 col-md-4">
+					<h5><span class="glyphicon glyphicon-home"></span> INSURANCE</h5>
+				</div>
+
+			</div>
+			<div class="row">
+				<div class="col-xs-5 col-sm-2">
+					<h5>Type</h5>
+				</div>
+				<div class="col-xs-7 col-sm-2">
+					<h5>: Medical</h5>
+				</div>
+				<div class="col-xs-5 col-sm-2">
+					<h5>Amount</h5>
+				</div>
+				<div class="col-xs-7 col-sm-2">
+					<h5>: $500</h5>
+				</div>
+				<div class="col-xs-5 col-sm-2">
+					<h5>Expiry</h5>
+				</div>
+				<div class="col-xs-7 col-sm-2">
+					<h5>: 12-10-2017</h5>
+				</div>
+			
+			</div>
+			<div class="row">
+				<div class="moreInfo collapse">
+					<div class="col-xs-2 moreInfoFields">
+						<h5>Notes : </h5>
+					</div>
+					<div class="col-xs-10 moreInfoFields">
+						<h5>Lorem Ipsum lorem ipsum...</h5>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<!-- end of data box Insurance--
+
+		<div class="col-sm-10 col-sm-offset-1 dataBox" data-toggle="collapse" data-target=".moreInfo">
+			<div class="row boxHeader">
+				<div class="col-xs-6 col-md-8">
+					<h5>FACEBOOK</h5>
+				</div>
+				<div class="col-xs-6 col-md-4">
+					<h5><span class="glyphicon glyphicon-lock"></span> PASSWORD</h5>
+				</div>
+
+			</div>
+			<div class="row">
+				<div class="col-xs-5 col-sm-2">
+					<h5>Username</h5>
+				</div>
+				<div class="col-xs-7 col-sm-4">
+					<h5>: harish.jose</h5>
+				</div>
+				<div class="col-xs-5 col-sm-1">
+					<h5>Password</h5>
+				</div>
+				<div class="col-xs-7 col-sm-5">
+					<h5>: <input class="passwordField" id="pword1" type="password" value="password"> <a id="show1" onclick="showPassword('pword1', this.id)"><span class='glyphicon glyphicon-eye-open'></span></a></h5>
+				</div>
+			
+			</div>
+			<div class="row">
+				<div class="moreInfo collapse">
+					<div class="col-xs-2 moreInfoFields">
+						<h5>Notes : </h5>
+					</div>
+					<div class="col-xs-10 moreInfoFields">
+						<h5>...http://...url......Lorem Ipsum lorem ipsum...</h5>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<!-- end of data box Password ---
+		<div class="col-sm-10 col-sm-offset-1 dataBox" data-toggle="collapse" data-target=".moreInfo">
+			<div class="row boxHeader">
+				<div class="col-xs-6 col-md-8">
+					<h5>NOTE TITLE</h5>
+				</div>
+				<div class="col-xs-6 col-md-4">
+					<h5><span class="glyphicon glyphicon-pencil"></span> NOTE</h5>
+				</div>
+
+			</div>
+			<div class="row">
+				<div class="moreInfo collapse">
+					<div class="col-xs-2 moreInfoFields">
+						<h5>Notes : </h5>
+					</div>
+					<div class="col-xs-10 moreInfoFields">
+						<h5>.........Lorem Ipsum lorem ipsum...</h5>
+					</div>
+				</div>
+			</div>
+
+		</div> --> 
+		<!-- end of data box note -->
+		
+	</div>
+
+	<div class="row footer">
+		&copy; 2017 Harish.
+	</div>
+	
+
+
+</div>
+</body>
+</html>
