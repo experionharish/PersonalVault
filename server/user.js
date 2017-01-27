@@ -126,6 +126,51 @@ userRouter.route('/')
 		
 		
 	});
+userRouter.route('/password')
+	.put(function(req, res){ //update password
+
+		var passwordStat={}; // response JSON 
+
+		req.checkBody('oldPassword', 'Old password is Empty').notEmpty().notEquals('d41d8cd98f00b204e9800998ecf8427e');
+		req.checkBody('newPassword', 'New password is Empty').notEmpty().notEquals('d41d8cd98f00b204e9800998ecf8427e');
+		req.checkBody('confirmPassword', 'Confirm Password is Empty').notEmpty().notEquals('d41d8cd98f00b204e9800998ecf8427e');
+		req.checkBody('confirmPassword', 'Confirm Password do not match').notEmpty().equals(req.body.newPassword);
+
+		var errors = req.validationErrors();
+		//console.log(errors.length);
+		
+		if(errors.length!=undefined){
+			passwordStat.status=401;
+			passwordStat.message=errors[0].msg;
+			res.send(passwordStat);
+		}
+		else{
+
+			//console.log(req.body);
+			connection.query('UPDATE user SET password=? WHERE uid=? AND password=?', [req.body.newPassword, req.decoded.uid, req.body.oldPassword], function(err, result) {
+				
+				if(err){
+					passwordStat.status=401;
+					passwordStat.message="Unable to connect to server";
+				}
+				else if(result.affectedRows==0){
+					passwordStat.status=401;
+					passwordStat.message="Old password is wrong";
+				}
+				else{	
+					console.log(result);
+					passwordStat.status=200;
+					passwordStat.message="New password saved";
+						
+					
+				}			
+				res.send(passwordStat);	
+			});
+		}	
+
+
+
+	});
   
 
 
@@ -179,6 +224,41 @@ infoRouter.route('/:infoID')
 			}
 
 		});
+	})
+	.post(function(req, res){    
+				
+		var infoData = {};
+		if(req.params.infoID=='null')
+			req.params.infoID='';
+		connection.query("SELECT info_id, information.cat_id, category, name, card_number, cvv, password, DATE_FORMAT(start_date, '%Y-%m-%d') start_date, period, CONCAT(EXTRACT( MONTH FROM `exp_date` ),'/' ,EXTRACT( YEAR FROM `exp_date` )) exp_date, DATE_FORMAT(exp_date, '%Y-%m-%d') exp, type, notes, organisation, amount, interest, status, important,file FROM information,info_category WHERE information.cat_id=info_category.cat_id AND uid= ? AND (name LIKE ? OR organisation LIKE ? OR notes LIKE ? OR type LIKE ?)", [req.decoded.uid, '%'+req.params.infoID+'%', '%'+req.params.infoID+'%', req.params.infoID, req.params.infoID], function(err, rows) {
+
+			if(err){
+				infoData.length=0;
+				infoData.message="Some Error with Sql...";
+				res.send(infoData);
+			}
+			else if(rows.length==0){
+				infoData.length=0;
+				infoData.message="No Match Found...";
+				res.send(infoData);
+			}
+			else{
+
+				rows.forEach(function(item){
+					if(item.password!=null)
+					{
+						var decipher = crypto.createDecipher(algorithm, key);
+						item.password = decipher.update(item.password, 'hex', 'utf8') + decipher.final('utf8');
+					}
+				});	
+
+				infoData = JSON.stringify(rows);
+				//console.log(infoData);
+				res.send(infoData);
+			}
+
+		});
+
 	});
 
 
@@ -198,7 +278,7 @@ infoRouter.route('/')
 			}
 			else if(rows.length==0){
 				infoData.length=0;
-				infoData.message="No Records Found on Your Store...";
+				infoData.message="No Records Found on Your Vault!";
 				res.send(infoData);
 			}
 			else{
@@ -251,7 +331,8 @@ infoRouter.route('/')
 		console.log("Files:"+req.file);
 		req.body.information=JSON.parse(req.body.information);
 		req.body.information.uid=parseInt(req.decoded.uid);
-		req.body.information.file=req.decoded.file;
+		if(req.file!=null)
+			req.body.information.file=req.decoded.file;
 		console.log(req.body.information);
 
 		var cipher = crypto.createCipher(algorithm, key);  

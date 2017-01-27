@@ -5,7 +5,7 @@ function validateEmail(email) {
     return regExp.test(email);
 }
 
-
+//Checking Empty Fields in an object
 function validateString(infoObj){
     
     for(var key in infoObj) {
@@ -15,6 +15,13 @@ function validateString(infoObj){
     }
 
       
+}
+function nullString(value){
+    
+    if (!(/\S/.test(value)))
+        return true;
+    else
+        return false;
 }
 
 
@@ -62,6 +69,56 @@ function login() {
 
 }
 
+
+function changePassword(){
+    var oldPassword = document.getElementById('oldPassword').value;
+    var newPassword = document.getElementById('newPassword').value;
+    var confirmPassword = document.getElementById('confirmPassword').value;
+    if(nullString(oldPassword) && nullString(newPassword) && nullString(confirmPassword)){
+
+        passwordMessage.style.color="#D8000C";
+        document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-alert'></span> All fields are mandatory";
+    }
+    else if(newPassword!=confirmPassword){
+        passwordMessage.style.color="#D8000C";
+        document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-remove-circle'></span>Confirm Password do not match";
+    }
+    else {
+        
+        var oldPassword = (Crypto.MD5(oldPassword)).toString();
+        var newPassword = (Crypto.MD5(newPassword)).toString();
+        var confirmPassword = (Crypto.MD5(confirmPassword)).toString();
+        axios.put('http://192.168.1.228:8080/user/password', {
+            oldPassword:oldPassword,
+            newPassword:newPassword,
+            confirmPassword:confirmPassword
+        },{headers: {'Authorization': localStorage.getItem("token")}})
+        .then(function (response) {
+            if(response.data.status==401){ // invalid password
+                document.getElementById('passwordMessage').style.color="#D8000C";
+                document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-remove-circle'></span> " + response.data.message;
+            }
+            else{ // password saved successfully
+                setTimeout(function(){
+                    $("#passwordModal").modal("hide");
+                },1000);
+                localStorage.setItem("token", response.headers.authorization);
+                document.getElementById('passwordMessage').style.color="#4F8A10";
+                document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-ok-circle'></span> " + response.data.message;
+            }    
+            
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+        
+    }
+}
+
+
+
+//Adding new information to Vault.    also used for editing information if there is argument info_id
 function addInfo(info_id){
 
     var infoType = document.getElementById('infoType').value;
@@ -165,7 +222,7 @@ function addInfo(info_id){
     }
 
     //validating fields
-    if(validateString(information)){
+    if(validateString(information)){ // invalid .. error message
                 document.getElementById('insert_status').innerHTML=`<div class="col-xs-12 col-sm-6 col-sm-offset-3 input_status">
                   <div class="alert alert-danger alert-dismissible">
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -173,10 +230,12 @@ function addInfo(info_id){
                   </div>
                 </div>  `;
     }
-    else{
+    else{ // valid fields...
 
         formData.append("information", JSON.stringify(information));
         console.log(information);
+
+
         if(info_id==null){ // adding new data
             axios.post('http://192.168.1.228:8080/user/info', formData , {headers: {'Authorization': localStorage.getItem("token")}})
                 .then(function (response) {
@@ -211,7 +270,7 @@ function addInfo(info_id){
                     console.log(error);
                 });
         }
-        else{
+        else{ //editing data
             formData.append("infoID", info_id);
             axios.put('http://192.168.1.228:8080/user/info', formData , {headers: {'Authorization': localStorage.getItem("token")}})
                 .then(function (response) {
@@ -250,10 +309,13 @@ function addInfo(info_id){
                 
                 return false;
         }    
-    }        
+    }   
+    window.scrollTo(0, 10);     
     return false;    
 }
 
+
+// Deleting a particula information from vault
 function deleteData(info_id){
     axios.delete('http://192.168.1.228:8080/user/info/'+info_id, {headers: {'Authorization': localStorage.getItem("token")}})
         .then(function (response) {
@@ -274,7 +336,7 @@ function deleteData(info_id){
 
 
 
-//Validating access rights 
+//Validating access rights during page load... also fetch name of user
 function authenticate() {
         //console.log(localStorage.getItem("token"));
         axios.get('http://192.168.1.228:8080/user',{headers: {'Authorization': localStorage.getItem("token")}})
@@ -297,23 +359,18 @@ function authenticate() {
 
 }
 
+
+
+//User logout
 function logout(){
 
     localStorage.clear();
     window.location="index.html";
-   /* axios.get('http://192.168.1.228:8080/login')
-        .then(function (response) {
-                //alert(response.data);
-                window.location = "index.html";
-                //document.getElementsByTagName('body')[0].innerHTML = response.data.message;
-            
-        })
-        .catch(function (error) {
-            console.log(error);
-        });  */
+   
 }
 
 
+// show and hide password field, pin field, card number field.
 function showPassword(passwordId, buttonId) {
 
     var passwordField = document.getElementById(passwordId);
@@ -329,7 +386,7 @@ function showPassword(passwordId, buttonId) {
     }
 }
 
-
+//Jquery datepicker
 function datePicker() {
     $( "#datepicker" ).datepicker();
     $( "#datepicker" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
@@ -337,7 +394,7 @@ function datePicker() {
 }
 
 
-
+//Add, Edit information.   generate different forms for different type of data according to the select box
 function gen_info_form(infoObj){
     
     if(infoObj==null){
@@ -360,7 +417,7 @@ function gen_info_form(infoObj){
           <div class="form-group">
             <label for="cardno" class="control-label col-sm-3">Card Number :</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" pattern="[0-9]{16}" title="Card number should be 14 digits" id="cardNo" value="`+ (infoObj.card_number || ``) + `">
+                <input type="text" class="form-control" pattern="[0-9]{16}" title="Card number should be 16 digits" id="cardNo" value="`+ (infoObj.card_number || ``) + `">
             </div>  
           </div>
            <div class="form-group">
@@ -656,7 +713,7 @@ function gen_info_form(infoObj){
     }
 }
 
-
+//generate the information box with data for home page according to the information type
 function generatehtml(info){
     var imp=``;
     var file=``;
@@ -673,7 +730,7 @@ function generatehtml(info){
         /*imp=`<div class="col-xs-2 col-md-1">
                 <h5><span class="glyphicon glyphicon-star"></span></h5>
              </div>`;*/
-         imp=` <span class="glyphicon glyphicon-star"></span> `;
+         imp=` <span class="glyphicon glyphicon-star goldStar"></span> `;
     }         
 
     if(info.file!=null){
@@ -936,7 +993,7 @@ function generatehtml(info){
 
 }
 
-
+//fetch all informations stored by a user from server and display it
 function getData(){
     axios.get('http://192.168.1.228:8080/user/info', {headers: {'Authorization': localStorage.getItem("token")}})
         .then(function (response) {
@@ -968,6 +1025,50 @@ function getData(){
 
 }
 
+//Search informations using a keyword from server and display it
+function searchData(){
+    var searchString=document.getElementById('searchInput').value.trim();
+    if(searchString=='')
+        var searchString=document.getElementById('searchInput-sm').value.trim();
+    if(searchString==''){
+        getData();
+        searchString='null';
+        return;
+    }
+    console.log(searchString);
+    console.log(localStorage.getItem("token"));
+    axios.post('http://192.168.1.228:8080/user/info/'+searchString,{} , {headers: {'Authorization': localStorage.getItem("token")}})
+        .then(function (response) {
+            //console.log(response.data.length);
+            document.getElementById('informations').innerHTML='';
+            if(response.data.status==false){
+                alert(response.data.message);
+                logout();
+            }    
+            else if(response.data.length>0){
+                response.data.forEach(function(info) {
+                    var infohtml=generatehtml(info);
+
+                    document.getElementById('informations').insertAdjacentHTML('beforeend', infohtml);
+
+                    //    console.log(infohtml);
+                });
+                localStorage.setItem("token", response.headers.authorization);
+            }
+            else{
+                document.getElementById('informations').innerHTML=` <div class="jumbotron">
+                    <p>${response.data.message} </p>  </div>`;
+            }    
+            
+        })
+        .catch(function (error) {
+            console.log(error);
+        });  
+
+}
+
+
+//edit information page is loaded with old values
 function editData(infoID){
     localStorage.setItem("editInfoID", infoID);
     window.location="edit.html";
@@ -1021,3 +1122,5 @@ function gen_edit_info_form(){
             console.log(error);
     });  
 }
+
+

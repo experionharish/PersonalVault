@@ -27,6 +27,15 @@
 	<script type="text/javascript" src="script/main.js"></script>
 	<script type="text/javascript">
 			authenticate();
+			$(document).ready(function(){
+				$('body').on('hidden.bs.modal', '.modal', function () {
+				    $('#oldPassword').val('');
+				    $('#newPassword').val('');
+				    $('#confirmPassword').val('');
+				    $('#passwordMessage').html(''); 
+				});
+
+			});
 	</script>
 
 </head>
@@ -46,21 +55,77 @@
 		        <span class="icon-bar"></span>
 		        <span class="icon-bar"></span>                        
 		      </button>
-		      <a class="navbar-brand userIcon" href="#">Hi <span id="name_of_user">user</span> <span class="glyphicon glyphicon-user"></span></a>
+
+		      <div class="dropdown">
+		      	<a class="navbar-brand userIcon dropdown-toggle" data-toggle="dropdown">Hi <span id="name_of_user">user</span> <span class="glyphicon glyphicon-user"></span></a>
+    		    <div class="dropdown-menu passwordMenu">
+			     <a class="changePassword" data-toggle="modal" data-target="#passwordModal">Change Password</a>
+			    </div>
+			  </div>
+		     
 		    </div>
 		    <div class="collapse navbar-collapse" id="myNavbar">
-		      <ul class="nav navbar-nav">
-		        <li class="active"><a href=""><span class="glyphicon glyphicon-briefcase"></span> MY VAULT</a></li>
-		        <li><a href="add.html"><span class="glyphicon glyphicon-plus-sign"></span> ADD</a></li>
-		      </ul>
-
-		      <ul class="nav navbar-nav navbar-right">
-		        <li><a onclick="logout()"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-		      </ul>
+			   
+			      <ul class="nav navbar-nav">
+			        <li class="active"><a href=""><span class="glyphicon glyphicon-briefcase"></span> MY VAULT</a></li>
+			        <li><a href="add.html"><span class="glyphicon glyphicon-plus-sign"></span> ADD</a></li>
+			      </ul>
+			    
+			   
+			      <ul class="nav navbar-nav navbar-right">
+				      <li>
+						<div class="input-group searchBox">
+					      <input id="searchInput" type="text" class="form-control" name="search" placeholder="Search" onkeyup="searchData()">
+					      <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+					    </div>
+					  </li>
+			          <li><a onclick="logout()"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+			      </ul>
+		     
 		    </div>
+
+			    <div class="input-group searchBox-sm">
+			      <input id="searchInput-sm" type="text" class="form-control" name="search" placeholder="Search" onkeyup="searchData()">
+			      <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+			    </div>
+
+
+
 		  </div>
 		</nav>
-		
+
+		<!-- Modal -->
+		  <div class="modal fade" id="passwordModal" role="dialog">
+		    <div class="modal-dialog passwordModal">
+		    
+		      <!-- Modal content-->
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal">&times;</button>
+		          <h4 class="modal-title">Change Password</h4>
+		        </div>
+		        <div class="modal-body">
+		        
+		          	<p>    
+			                <input type="password" id="oldPassword" class="form-control" placeholder="Old Password" title="Old Password">
+			          
+			          
+			                <input type="password" id="newPassword" class="form-control" placeholder="New Password" title="New Password">
+			           
+			          
+			                <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm Password" title="Confirm Password ">
+			            			           
+		          	</p>
+		        </div>
+		        <div class="modal-footer">
+		        	<div id="passwordMessage"></div>
+		          <button type="button" class="btn btn-info" onclick="changePassword()">Save</button>
+		        </div>
+		      </div>
+		      
+		    </div>
+		  </div>
+			<!-- Modal End-->
 	</div>
 	<div class="row content" id="informations">
 		

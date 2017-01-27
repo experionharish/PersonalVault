@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 
-	<title>Home | Personal Vault</title>
+	<title>Add To Vault | Personal Vault</title>
 	<meta charset="utf-8">
 	 <!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -57,7 +57,13 @@
 		        <span class="icon-bar"></span>
 		        <span class="icon-bar"></span>                        
 		      </button>
-		      <a class="navbar-brand userIcon" href="#">Hi <span id="name_of_user">user</span> <span class="glyphicon glyphicon-user"></span></a>
+		      <div class="dropdown">
+		      	<a class="navbar-brand userIcon dropdown-toggle" data-toggle="dropdown">Hi <span id="name_of_user">user</span> <span class="glyphicon glyphicon-user"></span></a>
+    		    <div class="dropdown-menu passwordMenu">
+			     <a class="changePassword" data-toggle="modal" data-target="#passwordModal">Change Password</a>
+			    </div>
+			  </div>
+
 		    </div>
 		    <div class="collapse navbar-collapse" id="myNavbar">
 		      <ul class="nav navbar-nav">
