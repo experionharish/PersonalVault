@@ -30,6 +30,7 @@ app.use(cors({
 
 app.use('/vault', express.static(__dirname+ './../source'));
 app.use('/login', user.login);
+app.use('/signup', user.signup);
 app.use('/user', authenticate);
 app.use('/user/files', user.files);
 app.use('/user/info', user.info);

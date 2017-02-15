@@ -17,9 +17,9 @@ authRouter.use(function(req, res, next) {
     // verifies secret and checks exp
     jwt.verify(token, 'iamlocked', function(err, decoded) {      
       if (err) {
-
+   
       	if(err.name=='TokenExpiredError')
-        	return res.json({ status: false, message: 'Inactive for 10 Min. Login again!' });    
+        	return res.json({ status: false, message: 'Session Expired!' });    
         else
         	return res.json({ status: false, message: 'Please login to access your Vault!' });    
 
@@ -30,13 +30,14 @@ authRouter.use(function(req, res, next) {
         connection.query('SELECT uid FROM user WHERE username= ?', [decoded.username], function(err, rows) {
 				
 				if(err){
+
 					return res.json({ status: false, message: 'Please login to access your Vault!' });    
 				} else {
 					var newtoken=jwt.sign({uid: decoded.uid,
 					  username: decoded.username
 					}, 'iamlocked', { expiresIn: 10*60 });
 			        res.header('Authorization', newtoken);
-			        
+			        res.header("Cache-Control","no-cache");
 			        console.log(decoded.exp);  
 			        next();
 				}

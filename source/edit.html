@@ -3,6 +3,8 @@
 <head>
 
 	<title>Edit Data | Personal Vault</title>
+
+
 	<meta charset="utf-8">
 	 <!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -15,6 +17,10 @@
 
 	<!-- Axios for http requests -->
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+	<!-- bootbox -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
+
 
 	<!-- datepicker -->
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -38,6 +44,15 @@
 
 	<script type="text/javascript">
 			authenticate();
+			$(document).ready(function(){
+				$('body').on('hidden.bs.modal', '.modal', function () {
+				    $('#oldPassword').val('');
+				    $('#newPassword').val('');
+				    $('#confirmPassword').val('');
+				    $('#passwordMessage').html(''); 
+				});
+
+			});
 	</script>
 
 </head>
@@ -45,7 +60,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col-sm-12 header">
-			<h1>PERSONAL VAULT</h1>
+			<h1><img class="logo" src="images/lock-icon-2.png"> PERSONAL VAULT</h1>
 		</div>
 	</div>
 	<div class="row">
@@ -72,12 +87,47 @@
 		      </ul>
 
 		      <ul class="nav navbar-nav navbar-right">
-		        <li><a onclick="logout()"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+		        <li><a onclick="logout(true)"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
 		      </ul>
 		    </div>
 		  </div>
 		</nav>
 		
+		<!-- Modal -->
+		  <div class="modal fade" id="passwordModal" role="dialog">
+		    <div class="modal-dialog passwordModal">
+		    
+		      <!-- Modal content-->
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal">&times;</button>
+		          <h4 class="modal-title">Change Password</h4>
+		        </div>
+		        <div class="modal-body">
+		        
+		          	<p>    
+			                <input type="password" id="oldPassword" class="form-control" placeholder="Old Password" title="Old Password">
+			          
+			          
+			                <input type="password" id="newPassword" class="form-control" placeholder="New Password" title="New Password">
+			           
+			          
+			                <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm Password" title="Confirm Password ">
+			            			           
+		          	</p>
+		        </div>
+		        <div class="modal-footer">
+		        	<div id="passwordMessage"></div>
+		          <button type="button" class="btn btn-info" onclick="changePassword()">Save</button>
+		        </div>
+		      </div>
+		      
+		    </div>
+		  </div>
+			<!-- Modal End-->
+
+
+
 	</div>
 	<div class="row filterBar">
 		<div class="col-xs-12 col-sm-4">

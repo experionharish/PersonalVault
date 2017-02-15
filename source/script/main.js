@@ -24,9 +24,27 @@ function nullString(value){
         return false;
 }
 
+function formatCardNo(fieldid){
+    var cardNo = document.getElementById(fieldid).value;
+    
+    var v = cardNo.replace(/\s+/g, '').replace(/[^0-9]/gi, '')
+    var matches = v.match(/\d{4,16}/g);
+    var match = matches && matches[0] || ''
+    var parts = []
+    for (i=0, len=match.length; i<len; i+=4) {
+       parts.push(match.substring(i, i+4))
+    }
+    if (parts.length) {
+      document.getElementById(fieldid).value = parts.join(' ');
+    } else {
+      document.getElementById(fieldid).value = cardNo;
+    }
+
+}
 
 //Validating Login credentials 
 function login() {
+    document.getElementById('activityLoader').style.display="block";
 
 	var userName = document.getElementById('username').value;
 	var password = document.getElementById('password').value;
@@ -44,6 +62,7 @@ function login() {
             if(response.data.status==401){ // invalid credentials
                 loginMessage.style.color="#D8000C";
                 loginMessage.innerHTML="<span class='glyphicon glyphicon-remove-circle'></span> " + response.data.message;
+                document.getElementById('activityLoader').style.display="none";
             }
             else{ // login success
                 setTimeout(function(){
@@ -52,7 +71,8 @@ function login() {
                 localStorage.setItem("token", response.data.token);
                 loginMessage.style.color="#4F8A10";
                 loginMessage.innerHTML="<span class='glyphicon glyphicon-ok-circle'></span> " + response.data.message;
-            }    
+            } 
+
             
         })
         .catch(function (error) {
@@ -62,10 +82,67 @@ function login() {
 	}
 	else{  
         //invalid email address. warning message
-		loginMessage.style.color="#9F6000";
+		loginMessage.style.color="#9F8000";//"#9F6000";
         loginMessage.innerHTML="<span class='glyphicon glyphicon-alert'></span> Enter a valid Email Id";
+        document.getElementById('activityLoader').style.display="none";
 	}
 
+
+}
+
+
+function signUp() {
+    var name = document.getElementById('name').value;
+    var userName = document.getElementById('username').value;
+    var password = document.getElementById('password').value;
+    var confirmPassword = document.getElementById('confirmPassword').value;
+    var signUpMessage = document.getElementById("signUpMessage");
+
+    if(nullString(name) || nullString(userName) || nullString(password) || nullString(confirmPassword)){
+
+        signUpMessage.style.color="#D8000C";
+        signUpMessage.innerHTML="<span class='glyphicon glyphicon-alert'></span> All fields are mandatory";
+    }
+    else if(!validateEmail(userName)){
+        signUpMessage.style.color="#9F6000";
+        signUpMessage.innerHTML="<span class='glyphicon glyphicon-alert'></span> Invalid Email Id";
+    }
+    else if(password!=confirmPassword){
+        signUpMessage.style.color="#D8000C";
+        signUpMessage.innerHTML="<span class='glyphicon glyphicon-remove-circle'></span>Confirm Password do not match";
+    }
+    else {
+
+        password=(Crypto.MD5(password)).toString();
+        confirmPassword=(Crypto.MD5(confirmPassword)).toString();
+
+        axios.post('http://192.168.1.228:8080/signup', {
+            name: name,
+            userName: userName,
+            password: password,
+            confirmPassword: confirmPassword
+        })
+        .then(function (response) {
+            if(response.data.status==401){ // invalid credentials
+                signUpMessage.style.color="#D8000C";
+                signUpMessage.innerHTML="<span class='glyphicon glyphicon-remove-circle'></span> " + response.data.message;
+            }
+            else{ // login success
+                setTimeout(function(){
+                    window.location = "index.html";
+                },3000);
+                
+                signUpMessage.style.color="#4F8A10";
+                signUpMessage.innerHTML="<span class='glyphicon glyphicon-ok-circle'></span> " + response.data.message;
+            }    
+            
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+
+    }
 
 }
 
@@ -76,11 +153,11 @@ function changePassword(){
     var confirmPassword = document.getElementById('confirmPassword').value;
     if(nullString(oldPassword) && nullString(newPassword) && nullString(confirmPassword)){
 
-        passwordMessage.style.color="#D8000C";
+        document.getElementById('passwordMessage').style.color="#D8000C";
         document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-alert'></span> All fields are mandatory";
     }
     else if(newPassword!=confirmPassword){
-        passwordMessage.style.color="#D8000C";
+        document.getElementById('passwordMessage').style.color="#D8000C";
         document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-remove-circle'></span>Confirm Password do not match";
     }
     else {
@@ -101,8 +178,93 @@ function changePassword(){
             else{ // password saved successfully
                 setTimeout(function(){
                     $("#passwordModal").modal("hide");
-                },1000);
+                },1500);
                 localStorage.setItem("token", response.headers.authorization);
+                document.getElementById('passwordMessage').style.color="#4F8A10";
+                document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-ok-circle'></span> " + response.data.message;
+            }    
+            
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+        
+    }
+}
+
+function requestResetPassword(){
+
+    var email = document.getElementById('resetEmail').value;
+    if(nullString(email) || !validateEmail(email)){
+
+        document.getElementById('passwordMessage').style.color="#D8000C";
+        document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-alert'></span> Invalid Email Id";
+    }
+    else {
+        
+        axios.put('http://192.168.1.228:8080/login', {
+            email:email
+        })
+        .then(function (response) {
+            if(response.data.status==401){ // User not found
+                document.getElementById('passwordMessage').style.color="#D8000C";
+                document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-remove-circle'></span> " + response.data.message;
+            }
+            else{ // password reset link mailed
+                setTimeout(function(){
+                    $("#forgotPasswordModal").modal("hide");
+                },2000);
+                document.getElementById('passwordMessage').style.color="#4F8A10";
+                document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-ok-circle'></span> " + response.data.message;
+            }    
+            
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+        
+    }
+}
+
+
+function resetPassword(){
+
+    var token = localStorage.getItem("resettoken");
+    
+    var newPassword = document.getElementById('newPassword').value;
+    var confirmPassword = document.getElementById('confirmPassword').value;
+    if( nullString(newPassword) || nullString(confirmPassword)){
+
+        document.getElementById('passwordMessage').style.color="#D8000C";
+        document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-alert'></span> All fields are mandatory";
+    }
+    else if(newPassword!=confirmPassword){
+        document.getElementById('passwordMessage').style.color="#D8000C";
+        document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-remove-circle'></span>Confirm Password do not match";
+    }
+    else {
+        
+        
+        var newPassword = (Crypto.MD5(newPassword)).toString();
+        var confirmPassword = (Crypto.MD5(confirmPassword)).toString();
+        axios.post('http://192.168.1.228:8080/user/password', {
+            newPassword:newPassword,
+            confirmPassword:confirmPassword
+        },{headers: {'Authorization': token}})
+        .then(function (response) {
+            if(response.data.status==401 || response.data.status==false){ // invalid password
+                document.getElementById('passwordMessage').style.color="#D8000C";
+                document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-remove-circle'></span> " + response.data.message;
+            }
+            else{ // password saved successfully
+                setTimeout(function(){
+                    window.location='index.html';
+                },2000);
+
+                localStorage.removeItem("resettoken");
+
                 document.getElementById('passwordMessage').style.color="#4F8A10";
                 document.getElementById('passwordMessage').innerHTML="<span class='glyphicon glyphicon-ok-circle'></span> " + response.data.message;
             }    
@@ -131,7 +293,7 @@ function addInfo(info_id){
         var information = {};
         information.cat_id = parseInt(infoType);
         information.name = document.getElementById('name').value;
-        information.card_number = document.getElementById('cardNo').value;
+        information.card_number = document.getElementById('cardNo').value.split(' ').join('');
         information.cvv = document.getElementById('cvv').value;
         information.password = document.getElementById('pin').value;
         information.exp_date = document.getElementById('expYear').value+'-'+document.getElementById('expMonth').value+'-01';
@@ -172,7 +334,7 @@ function addInfo(info_id){
         information.cat_id = parseInt(infoType);
         information.organisation = document.getElementById('bank').value.toUpperCase();
         information.amount = parseInt(document.getElementById('amount').value);
-        information.start_date = document.getElementById('datepicker').value;
+        information.start_date = document.getElementById('datepicker').value.split("-").reverse().join("-");
         information.status = document.getElementById('status').value;
         information.period = parseFloat(document.getElementById('period').value);
         information.interest = parseFloat(document.getElementById('interest').value);
@@ -193,7 +355,7 @@ function addInfo(info_id){
         information.organisation = document.getElementById('company').value.toUpperCase();
         information.type = document.getElementById('type').value;
         information.amount = parseInt(document.getElementById('amount').value);
-        information.exp_date = document.getElementById('datepicker').value;
+        information.exp_date = document.getElementById('datepicker').value.split("-").reverse().join("-");
         information.notes = document.getElementById('note').value;
         if(document.getElementById('important').checked == true){
             information.important = 1;    
@@ -241,7 +403,7 @@ function addInfo(info_id){
                 .then(function (response) {
                     console.log(response.data); 
                     if(response.data.status==false){
-                        alert(response.data.message);
+                        //alert(response.data.message);
                         logout();
                     } 
                     else if(response.data=="success"){
@@ -276,7 +438,7 @@ function addInfo(info_id){
                 .then(function (response) {
                     console.log(response.data); 
                     if(response.data.status==false){
-                        alert(response.data.message);
+                        //alert(response.data.message);
                         logout();
                     } 
                     else if(response.data=="success"){
@@ -317,33 +479,52 @@ function addInfo(info_id){
 
 // Deleting a particula information from vault
 function deleteData(info_id){
-    axios.delete('http://192.168.1.228:8080/user/info/'+info_id, {headers: {'Authorization': localStorage.getItem("token")}})
-        .then(function (response) {
-            console.log(response.data); 
-            if(response.data.status==false){
-                alert(response.data.message);
-                logout();
-            } 
-            else if(response.data=="success"){
-                localStorage.setItem("token", response.headers.authorization);
-                window.location="home.html";                
+
+    bootbox.confirm({
+        message: "<font color='black'>Are you sure you want to delete this record?</font>",
+        buttons: {
+                    confirm: {
+                        label: '<span class="glyphicon glyphicon-trash"></span> Delete',
+                        className: 'btn-danger'
+                    },
+                    cancel: {
+                        label: '<span class="glyphicon glyphicon-remove"></span> Cancel'
+                    }
+                    
+                },
+        callback:  function(result){  
+                if(result){
+                    axios.delete('http://192.168.1.228:8080/user/info/'+info_id, {headers: {'Authorization': localStorage.getItem("token")}})
+                        .then(function (response) {
+                            console.log(response.data); 
+                            if(response.data.status==false){
+                                //alert(response.data.message);
+                                logout();
+                            } 
+                            else if(response.data=="success"){
+                                localStorage.setItem("token", response.headers.authorization);
+                                window.location="home.html";                
+                            }
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                } 
+         
             }
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
+    });
 }
 
 
 
 //Validating access rights during page load... also fetch name of user
 function authenticate() {
-        //console.log(localStorage.getItem("token"));
+        console.log(localStorage.getItem("token"));
         axios.get('http://192.168.1.228:8080/user',{headers: {'Authorization': localStorage.getItem("token")}})
         .then(function (response) {
-            //console.log(response.headers.authorization);
+            //console.log(response.data.status);
             if(response.data.status==false){
-                alert(response.data.message);
+                //alert("Hello");
                 logout();
             }
             else{
@@ -362,11 +543,51 @@ function authenticate() {
 
 
 //User logout
-function logout(){
-
-    localStorage.clear();
-    window.location="index.html";
+function logout(lout){
+    if(lout === undefined) {
+      lout = false;
+    }
    
+    if(localStorage.getItem('token')!=null && lout){
+        bootbox.confirm({
+            message: "<font color='black'>Are you sure you want to Log Out?</font>",
+            buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            
+                        },
+                        cancel: {
+                            label: '<span class="glyphicon glyphicon-remove"></span> Cancel'
+                        }
+                        
+                    },
+            callback:  function(result){
+                if(result){ 
+                    axios.get('http://192.168.1.228:8080/login',{headers: {'Authorization': null}})
+                        .then(function (response) {
+                            //console.log(response.data.status);
+                            if(response.data=='success'){
+                                localStorage.clear();
+                                //alert('logout');
+                                window.location="index.html";
+                            }
+                            
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });  
+                    //localStorage.clear();
+                    //window.location="index.html";
+                }
+                
+            }
+        });
+    }
+    else{
+        localStorage.clear();
+        window.location="index.html";
+    }
+
 }
 
 
@@ -389,9 +610,66 @@ function showPassword(passwordId, buttonId) {
 //Jquery datepicker
 function datePicker() {
     $( "#datepicker" ).datepicker();
-    $( "#datepicker" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+    $( "#datepicker" ).datepicker( "option", "dateFormat", "dd-mm-yy" );
 
 }
+
+
+// auto complete bank name
+function loadBanks() {
+    var availableBanks = [
+      "Allahabad Bank",
+"Andhra Bank",
+"Axis Bank",
+"Bank of Bahrain and Kuwait",
+"Bank of Baroda - Corporate Banking",
+"Bank of Baroda - Retail Banking",
+"Bank of India",
+"Bank of Maharashtra",
+"Canara Bank",
+"Central Bank of India",
+"City Union Bank",
+"Corporation Bank",
+"Deutsche Bank",
+"Development Credit Bank",
+"Dhanlaxmi Bank",
+"Federal Bank",
+"ICICI Bank",
+"IDBI Bank",
+"Indian Bank",
+"Indian Overseas Bank",
+"IndusInd Bank",
+"ING Vysya Bank",
+"Jammu and Kashmir Bank",
+"Karnataka Bank Ltd",
+"Karur Vysya Bank",
+"Kotak Bank",
+"Laxmi Vilas Bank",
+"Oriental Bank of Commerce",
+"Punjab National Bank",
+"Punjab & Sind Bank",
+"Shamrao Vitthal Co-operative Bank",
+"South Indian Bank",
+"State Bank of Bikaner & Jaipur",
+"State Bank of Hyderabad",
+"State Bank of India",
+"State Bank of Mysore",
+"State Bank of Patiala",
+"State Bank of Travancore",
+"Syndicate Bank",
+"Tamilnad Mercantile Bank Ltd.",
+"UCO Bank",
+"Union Bank of India",
+"United Bank of India",
+"Vijaya Bank",
+"Yes Bank Ltd"
+    ];
+    $( "#bank" ).autocomplete({
+      source: availableBanks
+    });
+  }
+
+
 
 
 //Add, Edit information.   generate different forms for different type of data according to the select box
@@ -415,12 +693,6 @@ function gen_info_form(infoObj){
             </div>
           </div>
           <div class="form-group">
-            <label for="cardno" class="control-label col-sm-3">Card Number :</label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" pattern="[0-9]{16}" title="Card number should be 16 digits" id="cardNo" value="`+ (infoObj.card_number || ``) + `">
-            </div>  
-          </div>
-           <div class="form-group">
             <label for="bank" class="control-label col-sm-3">Bank Name :</label>
             <div class="col-sm-6">
                 <input type="text" class="form-control" pattern="[a-zA-Z0-9\\s]+" title="Only Characters, Numbers allowed" id="bank" value="`+ (infoObj.organisation || ``) + `">
@@ -428,7 +700,7 @@ function gen_info_form(infoObj){
           </div>
           <div class="form-group">
             <label class="control-label col-sm-3">Card Type :</label>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <select class="form-control" id="type">
                     <option value="VISA">VISA</option>
                     <option value="MasterCard">MasterCard</option>
@@ -437,18 +709,26 @@ function gen_info_form(infoObj){
             </div>
           </div>
           <div class="form-group">
-            <label for="cvv" class="control-label col-sm-3">CVV :</label>
+            <label for="cardno" class="control-label col-sm-3">Card Number :</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" pattern="[0-9]{3,4}" title="CVV code can be 3 to 4 digits" id="cvv" value="`+ (infoObj.cvv || ``) + `">
+                <input type="text" onkeyup="formatCardNo('cardNo')" class="form-control" pattern="[0-9\\s]{19}" autocomplete="off" title="Card number should be 16 digits" id="cardNo" value="`+ (infoObj.card_number || ``) + `">
             </div>  
           </div>
-         <div class="form-group">
-            <label for="pin" class="control-label col-sm-3">PIN :</label>
-            <div class="col-sm-6">
+           
+          <div class="form-group col-sm-6">
+            <label for="pin" class="control-label col-sm-6">PIN :</label>
+            <div class="col-sm-5">
                 <input type="password" class="form-control" pattern="[0-9]{4}" title="Only 4 digits allowed" id="pin" value="`+ (infoObj.password || ``) + `">
             </div>  
           </div>
-          <div class="form-group">
+          <div class="form-group col-sm-6">
+            <label for="cvv" class="control-label col-sm-3">CVV :</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" pattern="[0-9]{3,4}" title="CVV code can be 3 to 4 digits" id="cvv" value="`+ (infoObj.cvv || ``) + `">
+            </div>  
+          </div>
+         
+          <div class="form-group col-sm-12">
             <label for="expiry" class="control-label col-xs-12 col-sm-3">Expiry :</label>
             <div class="col-xs-5 col-sm-2">
                 <select class="form-control" id="expMonth">
@@ -512,7 +792,7 @@ function gen_info_form(infoObj){
         document.getElementById('type').value=infoObj.type || '';
         document.getElementById('expMonth').value=infoObj.expMonth || '';
         document.getElementById('expYear').value=infoObj.expYear || '';
-
+loadBanks();
 
     }
     else if(infoType=='2'){
@@ -574,30 +854,38 @@ function gen_info_form(infoObj){
                 <input type="text" class="form-control" pattern="[0-9]+" title="Only Numbers allowed" id="amount" value="`+ (infoObj.amount || ``) + `">
             </div>  
           </div>
-          <div class="form-group">
-            <label for="start_date" class="control-label col-sm-3">Start Date :</label>
-            <div class="col-sm-6">
-                    <input type="text" class="form-control" pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" title="YYYY-MM-DD" id="datepicker" value="`+ (infoObj.exp || ``) + `">
+          <div class="form-group col-sm-6">
+            <label for="start_date" class="control-label col-sm-6">Start Date :</label>
+            <div class="col-sm-5">
+                <div class="input-group">
+                    <input type="text" class="form-control" pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}" title="YYYY-MM-DD" id="datepicker" value="`+ (infoObj.exp || ``) + `">
+                    <div class="input-group-btn">
+                      <button class="btn btn-default" type="button">
+                        <i class="glyphicon glyphicon-calendar"></i>
+                      </button>
+                    </div>
+                </div>
             </div>      
           </div>
-          <div class="form-group">
+          <div class="form-group col-sm-6">
             <label for="period" class="control-label col-sm-3">Status :</label>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <input type="text" class="form-control" id="status" placeholder="Open/Closed" value="`+ (infoObj.status || ``) + `">
             </div>  
           </div> 
-          <div class="form-group">
-            <label for="period" class="control-label col-sm-3">Period :</label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" pattern="[0-9.]+" title="Only Numbers allowed" id="period" placeholder="No. of years" value="`+ (infoObj.period || ``) + `">
-            </div>  
-          </div>
-          <div class="form-group">
-            <label for="Interest" class="control-label col-sm-3">Interest Rate :</label>
-            <div class="col-sm-6">
+          <div class="form-group col-sm-6">
+            <label for="Interest" class="control-label col-sm-6">Interest Rate :</label>
+            <div class="col-sm-5">
                 <input type="text" class="form-control" id="interest" placeholder="Percentage" value="`+ (infoObj.interest || ``) + `">
             </div>  
           </div>  
+          <div class="form-group col-sm-6">
+            <label for="period" class="control-label col-sm-3">Period :</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" pattern="[0-9.]+" title="Only Numbers allowed" id="period" placeholder="No. of years" value="`+ (infoObj.period || ``) + `">
+            </div>  
+          </div>
+          
            <div class="form-group">
               <label for="note" class="control-label col-sm-3">Note :</label>
               <div class="col-sm-6">
@@ -624,6 +912,8 @@ function gen_info_form(infoObj){
         document.getElementById('informations').innerHTML=formHtml;
         datePicker();
         $( "#datepicker" ).datepicker("setDate", infoObj.start_date);
+
+    loadBanks();    
     }
     else if(infoType=='4'){
         var formHtml=`<form id="infoForm" class="form-horizontal infoForm" onsubmit="return addInfo();" enctype="multipart/form-data">
@@ -639,18 +929,26 @@ function gen_info_form(infoObj){
                 <input type="text" class="form-control" pattern="[a-zA-Z0-9\\s]+" title="Only Letters, Numbers allowed" id="type" value="`+ (infoObj.type || ``) + `">
             </div>  
           </div>
-           <div class="form-group">
+          <div class="form-group col-sm-6">
+            <label for="expiry" class="control-label col-sm-6">Expiry :</label>
+            <div class="col-sm-5">
+                <div class="input-group">
+                    <input type="text" class="form-control" pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}" title="Invalid Date" id="datepicker" value="`+ (infoObj.exp || ``) + `">
+                    <div class="input-group-btn">
+                      <button class="btn btn-default" type="button">
+                        <i class="glyphicon glyphicon-calendar"></i>
+                      </button>
+                    </div>
+                </div>
+            </div>      
+          </div> 
+           <div class="form-group col-sm-6">
             <label for="bank" class="control-label col-sm-3">Amount :</label>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <input type="text" class="form-control" pattern="[0-9]+" title="Only Numbers allowed" id="amount" value="`+ (infoObj.amount || ``) + `">
             </div>  
           </div>
-          <div class="form-group">
-            <label for="expiry" class="control-label col-sm-3">Expiry :</label>
-            <div class="col-sm-6">
-                    <input type="text" class="form-control" pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" title="Invalid Date" id="datepicker" value="`+ (infoObj.exp || ``) + `">
-            </div>      
-          </div> 
+          
            <div class="form-group">
               <label for="note" class="control-label col-sm-3">Note :</label>
               <div class="col-sm-6">
@@ -869,7 +1167,7 @@ function generatehtml(info){
                     <h5>Amount:</h5>
                 </div>
                 <div class="col-xs-7 col-sm-4">
-                    <h5>: $${info.amount}</h5>
+                    <h5>: &#8377;${info.amount}</h5>
                 </div>
                 <div class="col-xs-5 col-sm-2">
                     <h5>Status</h5>
@@ -937,7 +1235,7 @@ function generatehtml(info){
                     <h5>Amount</h5>
                 </div>
                 <div class="col-xs-7 col-sm-2">
-                    <h5>: $${info.amount}</h5>
+                    <h5>: &#8377;${info.amount}</h5>
                 </div>
                 <div class="col-xs-5 col-sm-2">
                     <h5>Expiry</h5>
@@ -1000,7 +1298,7 @@ function getData(){
             //console.log(response.data.length);
 
             if(response.data.status==false){
-                alert(response.data.message);
+                //alert(response.data.message);
                 logout();
             }    
             else if(response.data.length>0){
@@ -1042,7 +1340,7 @@ function searchData(){
             //console.log(response.data.length);
             document.getElementById('informations').innerHTML='';
             if(response.data.status==false){
-                alert(response.data.message);
+                //alert(response.data.message);
                 logout();
             }    
             else if(response.data.length>0){
@@ -1082,7 +1380,7 @@ function gen_edit_info_form(){
             //console.log(response.data.length);
 
             if(response.data.status==false){
-                alert(response.data.message);
+                //alert(response.data.message);
                 logout();
             }    
             else if(response.data.length==0){

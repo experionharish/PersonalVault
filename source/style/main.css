@@ -4,6 +4,30 @@ body {
 	color: white;
 }
 
+#emailVerifyMsg {
+	position: absolute;
+	left: 0px;
+	top: 20px;
+	display: none;
+	
+	
+}
+
+.newUser {
+	font-size: 15px;
+	float: right;
+	color: #aaa;
+}
+
+.newUser a {
+	color: #71d6d1;
+}
+
+.newUser a:hover {
+	text-decoration: none;
+	color: #b4faf4;
+}
+
 
 h1 {
 	text-align: center; 
@@ -21,6 +45,8 @@ h1 {
 	background: rgba(0,0,0,0.4);
 }
 
+
+
 .copyright {
 	text-align: center;
 	padding-top: 3px;
@@ -36,6 +62,13 @@ a {
 	border: none;
 }
 
+.small-plus {
+	font-size: 0.7em;
+	vertical-align: top;
+	margin-top: -3px;
+	margin-left: -2px;
+}
+
 .input-group {
 	margin: 15px 0;
 	
@@ -49,10 +82,36 @@ a {
 	letter-spacing:2px;
 }
 
+#activityLoader {
+	position: absolute;
+	left: 30%;
+	display: none;
+	
+}
+
 #loginMessage {
 	margin-top: 10px;
 	float: right;
-	
+	font-size: 15px;
+	text-shadow: 0 0 15px black;
+}
+
+#forgot a{
+	float: left;
+	margin-top: 10px;
+	color: grey;
+}
+
+#forgot a:hover {
+	text-decoration: none;
+	color: white;
+}
+
+#signUpMessage{
+	margin-top: 10px;
+	float: right;
+	font-size: 15px;
+	text-shadow: 0 0 15px black;
 }
 
 .header {
@@ -97,7 +156,7 @@ a {
 #passwordMessage {
 	color: #9f0000;
 	float: left;
-	font-size: 13px;
+	font-size: 14px;
 }
 
 .affix {
@@ -167,6 +226,15 @@ a {
 	background: none;
 	border: none;
 	width: 120px;
+	
+}
+
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  
+	.cardField {
+		letter-spacing: .08em;
+	}
 }
 
 .filterBar {
@@ -183,6 +251,10 @@ a {
 
 .infoForm {
 	padding: 30px
+}
+
+.infoForm .input-group {
+  	margin: 0; 
 }
 
 .input_status {
@@ -243,6 +315,12 @@ a {
 
 /* Extra Small Devices, Phones */ 
 @media (min-width : 320px) {
+
+	.logo {
+		width:65px;
+	  float: left;	
+	}
+	
 	.header h1 {
 		font-size:2.1em;
 		text-align: center;
@@ -274,7 +352,14 @@ a {
 
 /* Extra Small Devices, Phones */ 
 @media (min-width : 480px) {
-  .header h1 {
+  
+	.logo {
+		width:45px;
+	  	float: none;
+	  	margin-top: -25px;	
+	}
+	
+	.header h1 {
 		font-size:2.5em;
 		padding:4%;
 	}
@@ -294,6 +379,8 @@ a {
 
 /* Small Devices, Tablets */
 @media (min-width : 768px) {
+	
+
   .header h1 {
 		text-align: left;
 	}
@@ -324,12 +411,14 @@ a {
 }
 
 @media (min-width: 1000px) {
-  .container{
-    max-width: 75%;
+
+	
+  	.container{
+    	max-width: 80%;
   	}
 	.affix {
-      top:1px;
-      width: 75%;
+      	top:1px;
+      	width: 80%;
  	 }
 	
 

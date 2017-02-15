@@ -3,6 +3,7 @@
 <head>
 	<title>Protect Your Data!!! | Personal Vault</title>
 	<meta charset="utf-8">
+	<meta http-equiv='cache-control' content='no-cache'>
 	 <!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
@@ -17,6 +18,8 @@
 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
+	<!-- bootbox -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
 
 	<!-- Encryption library md5-->
 	<script src="script/2.5.3-crypto-md5.js"></script>
@@ -28,13 +31,19 @@
 
 
 </head>
-<body>
+<body style="background-image:url('images/bgimage.jpg'); background-repeat: no-repeat;background-attachment: fixed; ">
 <div class="container">
 	<div class="row">
+		<div class="col-sm-3 col-sm-offset-4" id="emailVerifyMsg">
+			  <div class="alert alert-success alert-dismissable fade in">
+			    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+			    <strong><span class='glyphicon glyphicon-ok-circle'></span></strong> Email Verified successfully.
+			  </div>
+		</div>
 		<div class="col-sm-5 col-sm-offset-3 vcenter">
-			<h1>PERSONAL VAULT</h1>
+			<h1><img class="logo" src="images/lock-icon-2.png">PERSONAL VAULT</h1>
 			<div class="loginForm">
-				<h4><span class="glyphicon glyphicon-log-in"></span> LOGIN</h4>
+				<h4><span class="glyphicon glyphicon-log-in"></span> LOGIN <span class="newUser">New user? <a href="signup.html">SIGNUP</a></span></h4>
 				<form>
 					<div class="input-group">
 	    				<span class="input-group-addon glyphiconBg" >
@@ -48,17 +57,56 @@
 	    				</span>
 	    				<input id="password" type="password" class="form-control" name="password" placeholder="Password">
 	  				</div>
-	  				<button type="button" onclick="login()" class="btn btn-primary btn-block loginbtn">LOGIN</button>
+	  				
+	  				<button type="button" onclick="login()" class="btn btn-primary btn-block loginbtn"><img id="activityLoader" src="images/loader.gif" width="28" /> LOGIN</button>
   				</form>
+  				<div id="forgot"><a data-toggle="modal" data-target="#forgotPasswordModal">Forgot Password?</a></div>
   				<div id="loginMessage"></div>
 			</div>
 			<div class="row">
 				<div class="col-xs-12 copyright">
 					&copy; 2017 Harish.
 				</div>	
-			</div>		
+			</div>	
+
+			<!-- Modal -->
+		  <div class="modal fade" id="forgotPasswordModal" role="dialog">
+		    <div class="modal-dialog passwordModal">
+		    
+		      <!-- Modal content-->
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal">&times;</button>
+		          <h4 class="modal-title">Reset Password</h4>
+		        </div>
+		        <div class="modal-body">
+		        
+		          	<p>    
+			                <input type="text" id="resetEmail" class="form-control" placeholder="Email" title="Registered Email Id">
+			        </p>
+		        </div>
+		        <div class="modal-footer">
+		        	<div id="passwordMessage"></div>
+		          <button type="button" class="btn btn-info" onclick="requestResetPassword()">Send Reset Password Link</button>
+		        </div>
+		      </div>
+		      
+		    </div>
+		  </div>
+			<!-- Modal End-->
+
+
+
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript">
+	var verify = location.search.split('verify=')[1] ? location.search.split('verify=')[1] : 'no';
+	if(verify=='yes'){
+		document.getElementById('emailVerifyMsg').style.display="block";
+	}
+</script>
+
 </body>
 </html>
