@@ -66,7 +66,7 @@ loginRouter.route('/')
 		req.sanitize('password').trim();
   		req.checkBody('password', 'Password is Empty').notEmpty().notEquals('d41d8cd98f00b204e9800998ecf8427e');
 		
-
+	console.log(req.body);
 		var errors = req.validationErrors();
 		//console.log(errors.length);
 		
@@ -189,7 +189,8 @@ signupRouter.route('/:token') //verify email
       		if (!err) {
       			connection.query('UPDATE user SET status=? WHERE username=?', [1, decoded.username], function(err, result) {
 				});
-				res.redirect('/vault?verify=yes');	
+				res.redirect('http://localhost:3000');	
+				//res.redirect('/vault?verify=yes');	
 			}
 		});	
 	});
@@ -281,14 +282,17 @@ userRouter.route('/')
 	.get(function(req, res){
 		//console.log(req.decoded);
 		connection.query("SELECT name FROM user WHERE uid=?",[req.decoded.uid],function(err, rows){
+			var user={};
 			if(!err){
-
-				var name = rows[0].name;
+				user.status = true;
+				user.data = rows[0].name;
 				//console.log(name);
-				res.send(name);
+				res.send(user);
 			}
 			else{
-				res.send("error");
+				user.status = false;
+				user.data = "null";
+				res.send(user);
 			}
 
 		});
@@ -425,15 +429,16 @@ infoRouter.route('/:infoID')
 	})
 	.delete(function(req, res){
 		connection.query("DELETE FROM information WHERE info_id=?", [req.params.infoID], function(err, rows) {
-
+			var infoData = {};
 			if(err){
 				infoData.length=0;
 				infoData.message="Some Error with Sql...";
 				res.send(infoData);
 			}
 			else {
-				
-				res.send("success");
+				infoData.status=200;
+				infoData.message="success"; 
+				res.send(infoData);
 			}
 
 		});
@@ -443,7 +448,7 @@ infoRouter.route('/:infoID')
 		var infoData = {};
 		if(req.params.infoID=='null')
 			req.params.infoID='';
-		connection.query("SELECT info_id, information.cat_id, category, name, card_number, cvv, password, DATE_FORMAT(start_date, '%Y-%m-%d') start_date, period, CONCAT(EXTRACT( MONTH FROM `exp_date` ),'/' ,EXTRACT( YEAR FROM `exp_date` )) exp_date, DATE_FORMAT(exp_date, '%Y-%m-%d') exp, type, notes, organisation, amount, interest, status, important,file FROM information,info_category WHERE information.cat_id=info_category.cat_id AND uid= ? AND (name LIKE ? OR organisation LIKE ? OR notes LIKE ? OR type LIKE ?)", [req.decoded.uid, '%'+req.params.infoID+'%', '%'+req.params.infoID+'%', req.params.infoID, req.params.infoID], function(err, rows) {
+		connection.query("SELECT info_id, information.cat_id, category, name, card_number, cvv, password, DATE_FORMAT(start_date, '%Y-%m-%d') start_date, period, CONCAT(EXTRACT( MONTH FROM `exp_date` ),'/' ,EXTRACT( YEAR FROM `exp_date` )) exp_date, DATE_FORMAT(exp_date, '%Y-%m-%d') exp, type, notes, organisation, amount, interest, status, important,file FROM information,info_category WHERE information.cat_id=info_category.cat_id AND uid= ? AND (name LIKE ? OR organisation LIKE ? OR notes LIKE ? OR type LIKE ?)", [req.decoded.uid, '%'+req.params.infoID+'%', '%'+req.params.infoID+'%', '%'+req.params.infoID+'%', '%'+req.params.infoID+'%'], function(err, rows) {
 
 			if(err){
 				infoData.length=0;
@@ -482,7 +487,7 @@ infoRouter.route('/')
 
 		var infoData = {};
 		
-		connection.query("SELECT info_id, category, name, card_number, cvv, password, CONCAT(EXTRACT( DAY FROM `start_date` ),'/' ,EXTRACT( MONTH FROM `start_date` ),'/' ,EXTRACT( YEAR FROM `start_date` )) start_date, period, CONCAT(EXTRACT( MONTH FROM `exp_date` ),'/' ,EXTRACT( YEAR FROM `exp_date` )) exp_date, CONCAT(EXTRACT( DAY FROM `exp_date` ),'/' ,EXTRACT( MONTH FROM `exp_date` ),'/' ,EXTRACT( YEAR FROM `exp_date` )) exp, type, notes, organisation, amount, interest, status, important,file FROM information,info_category WHERE information.cat_id=info_category.cat_id AND uid= ? ORDER BY important DESC, created_on DESC", [req.decoded.uid], function(err, rows) {
+		connection.query("SELECT info_id, category, name, DATE_FORMAT(created_on, '%r %d-%c-%Y') createdOn, card_number, cvv, password, CONCAT(EXTRACT( DAY FROM `start_date` ),'/' ,EXTRACT( MONTH FROM `start_date` ),'/' ,EXTRACT( YEAR FROM `start_date` )) start_date, period, CONCAT(EXTRACT( MONTH FROM `exp_date` ),'/' ,EXTRACT( YEAR FROM `exp_date` )) exp_date, CONCAT(EXTRACT( DAY FROM `exp_date` ),'/' ,EXTRACT( MONTH FROM `exp_date` ),'/' ,EXTRACT( YEAR FROM `exp_date` )) exp, type, notes, organisation, amount, interest, status, important,file FROM information,info_category WHERE information.cat_id=info_category.cat_id AND uid= ? ORDER BY important DESC, created_on DESC", [req.decoded.uid], function(err, rows) {
 
 			if(err){
 				infoData.length=0;
@@ -531,11 +536,11 @@ infoRouter.route('/')
 
    			if(err){
    				
- 				res.send("error");
+ 				res.send({status:400,message:"error"});
    			}
 
    			else{
-   				res.send("success");
+   				res.send({status:200,message:"success"});
    			}
  		});
 		
@@ -556,12 +561,14 @@ infoRouter.route('/')
 		req.body.infoID=parseInt(req.body.infoID);
 		connection.query('UPDATE information SET ? WHERE info_id=?', [req.body.information, req.body.infoID], function(err, result) {
    			// Neat!
+   			
    			if(err){
- 				res.send("error");
+   				
+ 				res.send({status:400,message:"error"});
    			}
 
    			else{
-   				res.send("success");
+   				res.send({status:200,message:"success"});
    			}
  		});
 		//res.send("success");

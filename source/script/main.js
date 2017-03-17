@@ -406,7 +406,7 @@ function addInfo(info_id){
                         //alert(response.data.message);
                         logout();
                     } 
-                    else if(response.data=="success"){
+                    else if(response.data.message=="success"){
                         document.getElementById('insert_status').innerHTML=`<div class="col-xs-12 col-sm-6 col-sm-offset-3 input_status">
                             <div class="alert alert-success alert-dismissible">
                                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -441,7 +441,7 @@ function addInfo(info_id){
                         //alert(response.data.message);
                         logout();
                     } 
-                    else if(response.data=="success"){
+                    else if(response.data.message=="success"){
                         
                         document.getElementById('insert_status').innerHTML=`<div class="col-xs-12 col-sm-6 col-sm-offset-3 input_status">
                             <div class="alert alert-success alert-dismissible">
@@ -456,7 +456,7 @@ function addInfo(info_id){
                         },1000);
                     }
                     else{
-                        
+                        console.log(response.data.message);
                         document.getElementById('insert_status').innerHTML=`<div class="col-xs-12 col-sm-6 col-sm-offset-3 input_status">
                           <div class="alert alert-danger alert-dismissible">
                             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -501,7 +501,7 @@ function deleteData(info_id){
                                 //alert(response.data.message);
                                 logout();
                             } 
-                            else if(response.data=="success"){
+                            else if(response.data.message=="success"){
                                 localStorage.setItem("token", response.headers.authorization);
                                 window.location="home.html";                
                             }
@@ -529,7 +529,7 @@ function authenticate() {
             }
             else{
                 localStorage.setItem("token", response.headers.authorization);
-                document.getElementById('name_of_user').innerHTML=response.data;
+                document.getElementById('name_of_user').innerHTML=response.data.data;
             }
         })
         .catch(function (error) {
